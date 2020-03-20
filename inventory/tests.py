@@ -11,3 +11,6 @@ class TestInventory(TestCase):
     def test_populate_models(self):
         Inventory.populate()
         self.assertTrue(Inventory.objects.count(),2)
+
+    def test_populate_stock(self):
+        Inventory().populate_stock()
