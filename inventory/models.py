@@ -71,5 +71,7 @@ class Inventory(models.Model):
         data = r.json()
         stock_lookup = {item['inventory_item_id']: item['available'] for item in data['inventory_levels']}
         for stock_id in stock_lookup:
-            product = Inventory.objects.get(inventory_item_id=str(stock_id))
-            product.objects.update(available=stock_lookup[stock_id])
+            variant = Variant.objects.get(inventory_item_id=str(stock_id))
+            inventory = variant.inventory
+            inventory.available=stock_lookup[stock_id]
+            inventory.save()

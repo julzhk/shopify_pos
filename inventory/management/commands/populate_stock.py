@@ -2,10 +2,9 @@ from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Inventory
 
 class Command(BaseCommand):
-    help = 'Populate Products'
+    help = 'Populate Stock Available levels'
 
 
     def handle(self, *args, **options):
-        Inventory.populate()
         Inventory.populate_stock()
-        self.stdout.write(self.style.SUCCESS('Successfully populated DB'))
+        self.stdout.write(self.style.SUCCESS('Successfully populated DB with stock'))
