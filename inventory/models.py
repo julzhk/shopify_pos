@@ -34,10 +34,8 @@ class Inventory(models.Model):
     def populate(cls):
         Inventory.objects.all().delete()
         resource = 'products'
-        auth_url = f'https://{API_KEY}:{PASSWORD}@{SHOP_NAME}.myshopify.com/admin/api/{API_VERSION}/{resource}.json'
-        r = requests.get(auth_url)
-        for product_data in r.json()['products']:
-            print(product_data)
+        shopify_data = cls._get_shopify_data(resource)
+        for product_data in shopify_data['products']:
             product = Inventory.objects.create(title=product_data['title'],
                                                body_html=product_data['body_html'],
                                                image=product_data['images'][0]['src']
@@ -51,11 +49,17 @@ class Inventory(models.Model):
                 ).save()
 
     @classmethod
-    def get_locations(cls):
-        resource = 'locations'
+    def _get_shopify_data(cls, resource):
         auth_url = f'https://{API_KEY}:{PASSWORD}@{SHOP_NAME}.myshopify.com/admin/api/{API_VERSION}/{resource}.json'
         r = requests.get(auth_url)
-        locations = [str(item['id']) for item in r.json()['locations']]
+        shopify_data = r.json()
+        return shopify_data
+
+    @classmethod
+    def get_locations(cls):
+        resource = 'locations'
+        shopify_data = cls._get_shopify_data(resource)
+        locations = [str(item['id']) for item in shopify_data['locations']]
         return locations
 
     @classmethod
