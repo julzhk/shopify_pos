@@ -4,12 +4,14 @@ import requests
 from django.db import models
 from django.utils.html import mark_safe
 
-API_KEY, PASSWORD, API_VERSION, SHARED_SECRET = os.environ.get('SHOPIFY_API_KEY'), os.environ.get('PASSWORD'), os.environ.get('API_VERSION'), os.environ.get('SHARED_SECRET')
-SHOP_NAME = os.environ.get('SHOP_NAME')
+API_KEY, PASSWORD, API_VERSION, SHARED_SECRET = os.environ['SHOPIFY_API_KEY'], os.environ['PASSWORD'], os.environ['API_VERSION'], os.environ['SHARED_SECRET']
+SHOP_NAME = os.environ['SHOP_NAME']
 scopes = ','.join(['read_products', 'read_orders'])
 
 shop_url = f"https://%s:%s@{SHOP_NAME}.myshopify.com/admin/api/%s" % (API_KEY, PASSWORD, API_VERSION)
 
+class APIException(Exception):
+    pass
 
 class Variant(models.Model):
     variant_id = models.IntegerField(blank=True)
@@ -52,6 +54,8 @@ class Inventory(models.Model):
     def _get_shopify_data(cls, resource):
         auth_url = f'https://{API_KEY}:{PASSWORD}@{SHOP_NAME}.myshopify.com/admin/api/{API_VERSION}/{resource}.json'
         r = requests.get(auth_url)
+        if r.status_code !=200:
+            raise APIException()
         shopify_data = r.json()
         return shopify_data
 

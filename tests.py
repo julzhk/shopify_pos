@@ -17,6 +17,7 @@ class TestAPI(TestCase):
         with shopify.Session.temp(shop_url, 'unstable', 'any-token'):
             assigned_site = shopify.ShopifyResource.site
             print(assigned_site)
+            self.assertEqual(1,)
 
     def test_get_products(self):
         resource = 'products'
